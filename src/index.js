@@ -58,7 +58,7 @@ export default class App extends Component {
         return true;
       }
       return false;
-    }).length,,
+    }).length,
   };
 
   deleteTask = (id) => {
