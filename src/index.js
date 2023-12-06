@@ -53,7 +53,12 @@ if (!storage.getItem('todoData')) {
 export default class App extends Component {
   state = {
     todoData: JSON.parse(storage.getItem('todoData')),
-    count: 3,
+    count: JSON.parse(storage.getItem('todoData')).filter((task) => {
+      if (task.completed === false) {
+        return true;
+      }
+      return false;
+    }).length,,
   };
 
   deleteTask = (id) => {
