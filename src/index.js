@@ -16,16 +16,19 @@ function debounce(fn, debounceTime = 200) {
   return result;
 }
 
-export default class App extends Component {
-  state = {
-    todoData: [
+let storage = window.localStorage;
+if (!storage.getItem('todoData')) {
+  let date = new Date();
+  storage.setItem(
+    'todoData',
+    JSON.stringify([
       {
         label: 'Drink Coffee',
         id: 1,
         completed: false,
         editing: false,
         hidden: false,
-        date: new Date(),
+        date: date,
       },
       {
         label: 'Make Awesome App',
@@ -33,7 +36,7 @@ export default class App extends Component {
         completed: false,
         editing: false,
         hidden: false,
-        date: new Date(),
+        date: date,
       },
       {
         label: 'Have a lunch',
@@ -41,9 +44,15 @@ export default class App extends Component {
         completed: false,
         editing: false,
         hidden: false,
-        date: new Date(),
+        date: date,
       },
-    ],
+    ])
+  );
+}
+
+export default class App extends Component {
+  state = {
+    todoData: JSON.parse(storage.getItem('todoData')),
     count: 3,
   };
 
@@ -51,6 +60,7 @@ export default class App extends Component {
     this.setState(({ todoData }) => {
       let element = todoData.findIndex((el) => el.id === id);
       const newTodoData = [...todoData.slice(0, element), ...todoData.slice(element + 1)];
+      storage.setItem('todoData', JSON.stringify(newTodoData));
 
       return {
         todoData: newTodoData,
@@ -93,6 +103,7 @@ export default class App extends Component {
         task.completed = !task.completed;
       }
       newArr[index] = task;
+      storage.setItem('todoData', JSON.stringify(newArr));
       return {
         todoData: newArr,
       };
@@ -114,6 +125,7 @@ export default class App extends Component {
         task.editing = !task.editing;
       }
       newArr[index] = task;
+      storage.setItem('todoData', JSON.stringify(newArr));
       return {
         todoData: newArr,
       };
@@ -136,6 +148,7 @@ export default class App extends Component {
       }
       task.label = line;
       newArr[index] = task;
+      storage.setItem('todoData', JSON.stringify(newArr));
       return {
         todoData: newArr,
       };
@@ -146,15 +159,17 @@ export default class App extends Component {
     this.setState(({ todoData }) => {
       let id = Math.random().toString(36).slice(2);
       let label = newLabel;
+      let date = new Date();
       let newTask = {
         label: label,
         id: id,
         completed: false,
         editing: false,
         hidden: false,
-        date: new Date(),
+        date: date,
       };
       let newTodoData = [...todoData, newTask];
+      storage.setItem('todoData', JSON.stringify(newTodoData));
       return {
         todoData: newTodoData,
       };
@@ -177,6 +192,7 @@ export default class App extends Component {
           newObject.hidden = false;
           return newObject;
         });
+        storage.setItem('todoData', JSON.stringify(newTodoData));
         return {
           todoData: newTodoData,
         };
@@ -192,7 +208,7 @@ export default class App extends Component {
           }
           return newObject;
         });
-
+        storage.setItem('todoData', JSON.stringify(newTodoData));
         return {
           todoData: newTodoData,
         };
@@ -208,7 +224,7 @@ export default class App extends Component {
           }
           return newObject;
         });
-
+        storage.setItem('todoData', JSON.stringify(newTodoData));
         return {
           todoData: newTodoData,
         };
@@ -229,7 +245,7 @@ export default class App extends Component {
           }
           return false;
         });
-
+      storage.setItem('todoData', JSON.stringify(newTodoData));
       return {
         todoData: newTodoData,
       };

@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow, parseISO } from 'date-fns';
 import PropTypes from 'prop-types';
 
 export default class Task extends Component {
   render() {
-    const { onToggleCompleted, onToggleEditing, onDeleted, editTask, label, completed, editing, hidden, date } =
+    let { onToggleCompleted, onToggleEditing, onDeleted, editTask, label, completed, editing, hidden, date } =
       this.props;
 
     const pressKey = (e) => {
@@ -13,7 +13,10 @@ export default class Task extends Component {
       }
     };
 
-    let createdTime = formatDistanceToNow(date, {
+    if (typeof date !== 'string') {
+      date = date.toISOString();
+    }
+    let createdTime = formatDistanceToNow(parseISO(date), {
       includeSeconds: true,
     });
     let addClasses = '';
