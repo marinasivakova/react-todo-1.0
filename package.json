@@ -14,8 +14,8 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "lint": "eslint .src/",
-    "lint:fix": "eslint .src/ --fix --color",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix --color",
     "format": "prettier . --write",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
