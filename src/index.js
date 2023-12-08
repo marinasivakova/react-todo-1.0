@@ -59,6 +59,7 @@ export default class App extends Component {
       }
       return false;
     }).length,
+    filter: 'All',
   };
 
   deleteTask = (id) => {
@@ -200,6 +201,7 @@ export default class App extends Component {
         storage.setItem('todoData', JSON.stringify(newTodoData));
         return {
           todoData: newTodoData,
+          filter: id,
         };
       });
     } else if (id === 'Active') {
@@ -216,6 +218,7 @@ export default class App extends Component {
         storage.setItem('todoData', JSON.stringify(newTodoData));
         return {
           todoData: newTodoData,
+          filter: id,
         };
       });
     } else {
@@ -232,6 +235,7 @@ export default class App extends Component {
         storage.setItem('todoData', JSON.stringify(newTodoData));
         return {
           todoData: newTodoData,
+          filter: id,
         };
       });
     }
@@ -267,6 +271,8 @@ export default class App extends Component {
           onToggleEditing={this.onToggleEditing}
           onToggleCompleted={this.onToggleCompleted}
           editTask={this.editTask}
+          onFilter={this.onFilter}
+          filterValue={this.state.filter}
         />
         <Footer onFilter={this.onFilter} onClear={this.onClear} count={this.state.count} />
       </section>

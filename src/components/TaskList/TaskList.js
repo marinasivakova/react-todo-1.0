@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import Task from '../Task';
 
-const TaskList = ({ todos, onDeleted, onToggleCompleted, onToggleEditing, editTask }) => {
+const TaskList = ({ todos, onDeleted, onToggleCompleted, onToggleEditing, editTask, onFilter, filterValue }) => {
   const elements = todos.map((item) => {
     const { id } = item;
 
@@ -15,6 +15,7 @@ const TaskList = ({ todos, onDeleted, onToggleCompleted, onToggleEditing, editTa
         onToggleEditing={() => onToggleEditing(id)}
         onToggleCompleted={() => onToggleCompleted(id)}
         editTask={(e) => editTask(id, e)}
+        onFilter={() => onFilter(filterValue)}
       />
     );
   });

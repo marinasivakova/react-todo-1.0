@@ -7,6 +7,12 @@ export default class Task extends Component {
     let { onToggleCompleted, onToggleEditing, onDeleted, editTask, label, completed, editing, hidden, date } =
       this.props;
 
+    const pressEdit = (e) => {
+      if (!e.target.value) {
+        e.target.value = label;
+      }
+    };
+
     const pressKey = (e) => {
       if (e.key === 'Enter') {
         return editTask(e.target.value);
@@ -20,8 +26,11 @@ export default class Task extends Component {
       includeSeconds: true,
     });
     let addClasses = '';
+    let addClassesButton = 'icon icon-edit';
+    let addClassesCheckbox = 'toggle';
     if (completed) {
       addClasses += 'completed';
+      addClassesButton += ' hidden';
       if (hidden) {
         addClasses += ' hidden';
       }
@@ -36,17 +45,22 @@ export default class Task extends Component {
     return (
       <li className={addClasses}>
         <div className="view">
-          <input onClick={onToggleCompleted} className="toggle" type="checkbox" />
+          <input onClick={onToggleCompleted} className={addClassesCheckbox} type="checkbox" />
           <label>
             <span className="description">{label}</span>
             <span className="created">created {createdTime}</span>
           </label>
-          <button className="icon icon-edit" onClick={onToggleEditing}></button>
+          <button className={addClassesButton} onClick={onToggleEditing}></button>
           <button className="icon icon-destroy" onClick={onDeleted}></button>
         </div>
-        <input type="text" className="edit" onKeyDown={pressKey} />
+        <input type="text" defaultValue={label} className="edit" onKeyDown={pressKey} onChange={pressEdit} />
       </li>
     );
+  }
+  componentDidUpdate(prevProps) {
+    if (prevProps.completed !== this.props.completed) {
+      this.props.onFilter();
+    }
   }
 }
 
