@@ -120,10 +120,10 @@ export default class App extends Component {
     });
   };
 
-  addTask = (newLabel) => {
+  addTask = (obj) => {
     this.setState(({ todoData }) => {
       let id = Math.random().toString(36).slice(2);
-      let label = newLabel;
+      let label = obj.taskTitle;
       let date = new Date();
       let newTask = {
         label: label,
@@ -132,6 +132,7 @@ export default class App extends Component {
         editing: false,
         hidden: false,
         date: date,
+        timer: [obj.minutes, obj.seconds],
       };
       let newTodoData = [...todoData, newTask];
       storage.setItem('todoData', JSON.stringify(newTodoData));
@@ -141,12 +142,9 @@ export default class App extends Component {
     });
   };
 
-  getLabel = debounce((line) => {
-    if (line) {
-      this.addTask(line);
-      return true;
-    }
-    return false;
+  getLabel = debounce((obj) => {
+    this.addTask(obj);
+    return true;
   });
 
   onFilter = (id) => {

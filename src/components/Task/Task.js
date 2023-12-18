@@ -3,9 +3,11 @@ import { formatDistanceToNow, parseISO } from 'date-fns';
 import PropTypes from 'prop-types';
 import cn from 'classnames';
 
+import Timer from '../Timer';
+
 export default class Task extends Component {
   render() {
-    let { onToggleCompleted, onToggleEditing, onDeleted, editTask, label, completed, editing, hidden, date } =
+    let { onToggleCompleted, onToggleEditing, onDeleted, editTask, label, completed, editing, hidden, date, timer } =
       this.props;
 
     const pressEdit = (e) => {
@@ -42,8 +44,9 @@ export default class Task extends Component {
         <div className="view">
           <input onClick={onToggleCompleted} className={classes.checkbox} type="checkbox" defaultChecked={completed} />
           <label>
-            <span className="description">{label}</span>
-            <span className="created">created {createdTime}</span>
+            <span className="title">{label}</span>
+            <Timer completed={completed} passedTime={timer} />
+            <span className="description">created {createdTime}</span>
           </label>
           <button className={classes.edit} onClick={onToggleEditing}></button>
           <button className="icon icon-destroy" onClick={onDeleted}></button>

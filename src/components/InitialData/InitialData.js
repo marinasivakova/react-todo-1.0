@@ -11,6 +11,7 @@ if (!storage.getItem('todoData')) {
         editing: false,
         hidden: false,
         date: date,
+        timer: [0, 0],
       },
       {
         label: 'Make Awesome App',
@@ -19,6 +20,7 @@ if (!storage.getItem('todoData')) {
         editing: false,
         hidden: false,
         date: date,
+        timer: [0, 0],
       },
       {
         label: 'Have a lunch',
@@ -27,6 +29,7 @@ if (!storage.getItem('todoData')) {
         editing: false,
         hidden: false,
         date: date,
+        timer: [0, 0],
       },
     ])
   );
