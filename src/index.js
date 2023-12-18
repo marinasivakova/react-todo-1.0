@@ -43,7 +43,7 @@ export default class App extends Component {
 
   updateCount = () => {
     this.setState(({ todoData }) => {
-      todoData.filter((task) => task.completed === false).length;
+      return { count: todoData.filter((task) => task.completed === false).length };
     });
   };
 

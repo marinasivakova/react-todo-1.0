@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { formatDistanceToNow, parseISO } from 'date-fns';
 import PropTypes from 'prop-types';
+import cn from 'classnames';
 
 export default class Task extends Component {
   render() {
@@ -30,32 +31,21 @@ export default class Task extends Component {
     let createdTime = formatDistanceToNow(parseISO(date), {
       includeSeconds: true,
     });
-    let addClasses = '';
-    let addClassesButton = 'icon icon-edit';
-    let addClassesCheckbox = 'toggle';
-    if (completed) {
-      addClasses += 'completed';
-      addClassesButton += ' hidden';
-      if (hidden) {
-        addClasses += ' hidden';
-      }
-    } else if (editing) {
-      addClasses += 'editing';
-    } else if (hidden) {
-      addClasses += 'hidden';
-    } else {
-      addClasses = '';
-    }
+    const classes = {
+      checkbox: cn('toggle'),
+      edit: cn('icon icon-edit', { hidden: completed }),
+      task: cn({ completed: completed, editing: editing, hidden: hidden }),
+    };
 
     return (
-      <li className={addClasses}>
+      <li className={classes.task}>
         <div className="view">
-          <input onClick={onToggleCompleted} className={addClassesCheckbox} type="checkbox" checked={completed} />
+          <input onClick={onToggleCompleted} className={classes.checkbox} type="checkbox" defaultChecked={completed} />
           <label>
             <span className="description">{label}</span>
             <span className="created">created {createdTime}</span>
           </label>
-          <button className={addClassesButton} onClick={onToggleEditing}></button>
+          <button className={classes.edit} onClick={onToggleEditing}></button>
           <button className="icon icon-destroy" onClick={onDeleted}></button>
         </div>
         <input
