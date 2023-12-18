@@ -4,6 +4,7 @@ import { createRoot } from 'react-dom/client';
 import Header from './components/NewTaskForm';
 import TodoList from './components/TaskList';
 import Footer from './components/Footer';
+import storage from './components/InitialData';
 
 function debounce(fn, debounceTime = 200) {
   let timeout;
@@ -14,40 +15,6 @@ function debounce(fn, debounceTime = 200) {
     }, debounceTime);
   }
   return result;
-}
-
-let storage = window.localStorage;
-if (!storage.getItem('todoData')) {
-  let date = new Date();
-  storage.setItem(
-    'todoData',
-    JSON.stringify([
-      {
-        label: 'Drink Coffee',
-        id: 1,
-        completed: false,
-        editing: false,
-        hidden: false,
-        date: date,
-      },
-      {
-        label: 'Make Awesome App',
-        id: 2,
-        completed: false,
-        editing: false,
-        hidden: false,
-        date: date,
-      },
-      {
-        label: 'Have a lunch',
-        id: 3,
-        completed: false,
-        editing: false,
-        hidden: false,
-        date: date,
-      },
-    ])
-  );
 }
 
 export default class App extends Component {
@@ -76,15 +43,7 @@ export default class App extends Component {
 
   updateCount = () => {
     this.setState(({ todoData }) => {
-      let newCount = todoData.filter((task) => {
-        if (task.completed === false) {
-          return true;
-        }
-        return false;
-      }).length;
-      return {
-        count: newCount,
-      };
+      todoData.filter((task) => task.completed === false).length;
     });
   };
 
@@ -193,11 +152,7 @@ export default class App extends Component {
   onFilter = (id) => {
     if (id === 'All') {
       this.setState(({ todoData }) => {
-        const newTodoData = todoData.map((obj) => {
-          const newObject = Object.assign({}, obj);
-          newObject.hidden = false;
-          return newObject;
-        });
+        const newTodoData = todoData.map((obj) => ({ ...obj, hidden: false }));
         storage.setItem('todoData', JSON.stringify(newTodoData));
         return {
           todoData: newTodoData,
@@ -207,13 +162,11 @@ export default class App extends Component {
     } else if (id === 'Active') {
       this.setState(({ todoData }) => {
         const newTodoData = todoData.map((obj) => {
-          const newObject = Object.assign({}, obj);
-          if (newObject.completed === false) {
-            newObject.hidden = false;
+          if (obj.completed === false) {
+            return { ...obj, hidden: false };
           } else {
-            newObject.hidden = true;
+            return { ...obj, hidden: true };
           }
-          return newObject;
         });
         storage.setItem('todoData', JSON.stringify(newTodoData));
         return {
@@ -224,13 +177,11 @@ export default class App extends Component {
     } else {
       this.setState(({ todoData }) => {
         const newTodoData = todoData.map((obj) => {
-          const newObject = Object.assign({}, obj);
-          if (newObject.completed === true) {
-            newObject.hidden = false;
+          if (obj.completed === true) {
+            return { ...obj, hidden: false };
           } else {
-            newObject.hidden = true;
+            return { ...obj, hidden: true };
           }
-          return newObject;
         });
         storage.setItem('todoData', JSON.stringify(newTodoData));
         return {

@@ -10,7 +10,12 @@ export default class Task extends Component {
     const pressEdit = (e) => {
       if (!e.target.value) {
         e.target.value = label;
+        e.target.select();
       }
+    };
+
+    const selectText = (e) => {
+      e.target.select();
     };
 
     const pressKey = (e) => {
@@ -53,7 +58,14 @@ export default class Task extends Component {
           <button className={addClassesButton} onClick={onToggleEditing}></button>
           <button className="icon icon-destroy" onClick={onDeleted}></button>
         </div>
-        <input type="text" defaultValue={label} className="edit" onKeyDown={pressKey} onChange={pressEdit} />
+        <input
+          type="text"
+          defaultValue={label}
+          className="edit"
+          onKeyDown={pressKey}
+          onChange={pressEdit}
+          onFocus={selectText}
+        />
       </li>
     );
   }

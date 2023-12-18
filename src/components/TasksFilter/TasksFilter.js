@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import cn from 'classnames';
 
 export default class TasksFilter extends Component {
   state = {
-    allButton: { id: 'All', className: 'selected' },
-    activeButton: { id: 'Active', className: '' },
-    completedButton: { id: 'Completed', className: '' },
+    all: true,
+    active: false,
+    completed: false,
   };
 
   render() {
@@ -14,25 +15,25 @@ export default class TasksFilter extends Component {
       if (value === 'All') {
         this.setState(() => {
           return {
-            allButton: { id: 'All', className: 'selected' },
-            activeButton: { id: 'Active', className: '' },
-            completedButton: { id: 'Completed', className: '' },
+            all: true,
+            active: false,
+            completed: false,
           };
         });
       } else if (value === 'Active') {
         this.setState(() => {
           return {
-            allButton: { id: 'All', className: '' },
-            activeButton: { id: 'Active', className: 'selected' },
-            completedButton: { id: 'Completed', className: '' },
+            all: false,
+            active: true,
+            completed: false,
           };
         });
       } else {
         this.setState(() => {
           return {
-            allButton: { id: 'All', className: '' },
-            activeButton: { id: 'Active', className: '' },
-            completedButton: { id: 'Completed', className: 'selected' },
+            all: false,
+            active: false,
+            completed: true,
           };
         });
       }
@@ -43,20 +44,26 @@ export default class TasksFilter extends Component {
       return onFilter(e.target.id);
     };
 
+    const classes = {
+      all: cn({ selected: this.state.all }),
+      active: cn({ selected: this.state.active }),
+      completed: cn({ selected: this.state.completed }),
+    };
+
     return (
       <ul className="filters">
         <li>
-          <button id="All" className={this.state.allButton.className} onClick={filterPressed}>
+          <button id="All" className={classes.all} onClick={filterPressed}>
             All
           </button>
         </li>
         <li>
-          <button id="Active" className={this.state.activeButton.className} onClick={filterPressed}>
+          <button id="Active" className={classes.active} onClick={filterPressed}>
             Active
           </button>
         </li>
         <li>
-          <button id="Completed" className={this.state.completedButton.className} onClick={filterPressed}>
+          <button id="Completed" className={classes.completed} onClick={filterPressed}>
             Completed
           </button>
         </li>
