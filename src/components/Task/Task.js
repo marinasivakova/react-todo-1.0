@@ -7,8 +7,19 @@ import Timer from '../Timer';
 
 export default class Task extends Component {
   render() {
-    let { onToggleCompleted, onToggleEditing, onDeleted, editTask, label, completed, editing, hidden, date, timer } =
-      this.props;
+    let {
+      onToggleCompleted,
+      onToggleEditing,
+      onDeleted,
+      editTask,
+      label,
+      completed,
+      editing,
+      hidden,
+      date,
+      timer,
+      created,
+    } = this.props;
 
     const pressEdit = (e) => {
       if (!e.target.value) {
@@ -45,7 +56,7 @@ export default class Task extends Component {
           <input onClick={onToggleCompleted} className={classes.checkbox} type="checkbox" defaultChecked={completed} />
           <label>
             <span className="title">{label}</span>
-            <Timer completed={completed} passedTime={timer} />
+            <Timer completed={completed} passedTime={timer} created={created} />
             <span className="description">created {createdTime}</span>
           </label>
           <button className={classes.edit} onClick={onToggleEditing}></button>
@@ -78,6 +89,7 @@ Task.defaultProps = {
   completed: false,
   editing: false,
   hidden: false,
+  created: false,
 };
 
 Task.propTypes = {
@@ -89,4 +101,5 @@ Task.propTypes = {
   completed: PropTypes.bool,
   editing: PropTypes.bool,
   hidden: PropTypes.bool,
+  created: PropTypes.bool,
 };

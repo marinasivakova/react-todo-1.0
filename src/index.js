@@ -53,6 +53,20 @@ export default class App extends Component {
     }
   }
 
+  componentDidMount() {
+    this.setState(({ todoData }) => {
+      const newArr = todoData.map((obj) => {
+        const newObject = Object.assign({}, obj);
+        newObject.created = false;
+        return newObject;
+      });
+      storage.setItem('todoData', JSON.stringify(newArr));
+      return {
+        todoData: newArr,
+      };
+    });
+  }
+
   onToggleCompleted = (id) => {
     this.setState(({ todoData }) => {
       let index = todoData.findIndex((el) => el.id === id);
@@ -133,6 +147,7 @@ export default class App extends Component {
         hidden: false,
         date: date,
         timer: [obj.minutes, obj.seconds],
+        created: true,
       };
       let newTodoData = [...todoData, newTask];
       storage.setItem('todoData', JSON.stringify(newTodoData));

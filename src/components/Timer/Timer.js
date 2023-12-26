@@ -3,10 +3,9 @@ import cn from 'classnames';
 import propTypes from 'prop-types';
 
 export default class Timer extends Component {
-  state = { count: 1, interval: null };
-  interval = null;
+  state = { count: 1, interval: null, pressed: false };
   updateTimer = (e) => {
-    if (e.target.className === 'icon icon-play') {
+    if (!e && this.props.created) {
       const updateTimeout = () => {
         let count = this.state.count;
         this.setState({
@@ -14,11 +13,30 @@ export default class Timer extends Component {
           count: count + 1,
         });
         this.getTimeString();
-        this.interval = setTimeout(updateTimeout, 1000);
       };
-      this.interval = setTimeout(updateTimeout, 1000);
+      this.setState({ interval: setTimeout(updateTimeout, 1000) });
+    } else if (e.target.className === 'icon icon-play') {
+      if (this.state.pressed) {
+        return null;
+      }
+      this.setState({
+        pressed: true,
+      });
+      const updateTimeout = () => {
+        let count = this.state.count;
+        this.setState({
+          timeCurrent: new Date(count * 1000),
+          count: count + 1,
+        });
+        this.getTimeString();
+        this.setState({ interval: setTimeout(updateTimeout, 1000) });
+      };
+      this.setState({ interval: setTimeout(updateTimeout, 1000) });
     } else {
-      clearTimeout(this.interval);
+      clearTimeout(this.state.interval);
+      this.setState({
+        pressed: false,
+      });
     }
   };
 
@@ -26,8 +44,10 @@ export default class Timer extends Component {
     let timeString = '';
     if (this.state.timeCurrent) {
       timeString = this.state.timeCurrent.toLocaleTimeString([], {
+        hour: '2-digit',
         minute: '2-digit',
         second: '2-digit',
+        timeZone: 'UTC',
       });
     }
     return timeString;
@@ -48,6 +68,9 @@ export default class Timer extends Component {
 
   componentDidMount() {
     this.createInitialTimer();
+    if (this.props.created) {
+      this.updateTimer();
+    }
   }
 
   render() {
@@ -61,7 +84,7 @@ export default class Timer extends Component {
       }),
     };
     if (completed) {
-      clearTimeout(this.interval);
+      clearTimeout(this.state.interval);
     }
     return (
       <span className="description">
@@ -75,10 +98,12 @@ export default class Timer extends Component {
 
 Timer.defaultProps = {
   completed: false,
+  created: false,
   passedTime: [0, 0],
 };
 
 Timer.propTypes = {
   completed: propTypes.bool,
+  created: propTypes.bool,
   passedTime: propTypes.array,
 };

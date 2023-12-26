@@ -13,9 +13,12 @@ export default class NewTaskForm extends Component {
   };
   updateState = (e) => {
     if (e.target.id === 'input-title') {
-      this.setState({
-        taskTitle: e.target.value,
-      });
+      let trimmed = e.target.value.trim();
+      if (trimmed) {
+        this.setState({
+          taskTitle: trimmed,
+        });
+      }
     }
     if (e.target.id === 'input-min') {
       if (!isNaN(Number(e.target.value))) {
