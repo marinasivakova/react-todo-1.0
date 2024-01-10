@@ -1,79 +1,60 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
-export default class NewTaskForm extends Component {
-  state = { taskTitle: '', minutes: '', seconds: '' };
-  static defaultProps = {
-    onTyped: () => {
-      console.log('no function set for typing');
-    },
-  };
-  static propTypes = {
-    onTyped: PropTypes.func,
-  };
-  updateState = (e) => {
+const NewTaskForm = ({ onTyped }) => {
+  const [taskTitle, setTitle] = useState('');
+  const [minutes, setMinutes] = useState('');
+  const [seconds, setSeconds] = useState('');
+  const updateState = (e) => {
     if (e.target.id === 'input-title') {
       let trimmed = e.target.value.trim();
       if (trimmed) {
-        this.setState({
-          taskTitle: trimmed,
-        });
+        setTitle(trimmed);
       }
     }
     if (e.target.id === 'input-min') {
       if (!isNaN(Number(e.target.value))) {
-        this.setState({
-          minutes: e.target.value,
-        });
+        setMinutes(e.target.value);
       } else {
-        this.setState({
-          minutes: null,
-        });
+        setMinutes(null);
       }
     }
     if (e.target.id === 'input-sec') {
       if (!isNaN(Number(e.target.value))) {
-        this.setState({
-          seconds: e.target.value,
-        });
+        setSeconds(e.target.value);
       } else {
-        this.setState({
-          seconds: null,
-        });
+        setSeconds(null);
       }
     }
-    if (this.state.taskTitle && this.state.minutes && this.state.seconds) {
-      this.pressKey(e);
+    if (taskTitle && minutes && seconds) {
+      pressKey(e);
     }
   };
-  pressKey = (e) => {
+  const pressKey = (e) => {
     if (e.key === 'Enter') {
-      this.props.onTyped(this.state);
+      onTyped({ taskTitle: taskTitle, minutes: minutes, seconds: seconds });
       document.querySelector('.new-todo-form').reset();
     }
   };
-  render() {
-    return (
-      <header className="header">
-        <h1>todos</h1>
-        <form className="new-todo-form">
-          <input className="new-todo" id="input-title" placeholder="Task" autoFocus="" onKeyUp={this.updateState} />
-          <input
-            className="new-todo-form__timer"
-            id="input-min"
-            placeholder="Min"
-            autoFocus=""
-            onKeyUp={this.updateState}
-          />
-          <input
-            className="new-todo-form__timer"
-            id="input-sec"
-            placeholder="Sec"
-            autoFocus=""
-            onKeyUp={this.updateState}
-          />
-        </form>
-      </header>
-    );
-  }
-}
+  return (
+    <header className="header">
+      <h1>todos</h1>
+      <form className="new-todo-form">
+        <input className="new-todo" id="input-title" placeholder="Task" autoFocus="" onKeyUp={updateState} />
+        <input className="new-todo-form__timer" id="input-min" placeholder="Min" autoFocus="" onKeyUp={updateState} />
+        <input className="new-todo-form__timer" id="input-sec" placeholder="Sec" autoFocus="" onKeyUp={updateState} />
+      </form>
+    </header>
+  );
+};
+
+NewTaskForm.defaultProps = {
+  onTyped: () => {
+    console.log('no function set for typing');
+  },
+};
+NewTaskForm.propTypes = {
+  onTyped: PropTypes.func,
+};
+
+export default NewTaskForm;

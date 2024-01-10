@@ -1,4 +1,4 @@
-import React, { Component, StrictMode } from 'react';
+import React, { StrictMode, useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 
 import Header from './components/NewTaskForm';
@@ -17,58 +17,31 @@ function debounce(fn, debounceTime = 200) {
   return result;
 }
 
-export default class App extends Component {
-  state = {
-    todoData: JSON.parse(storage.getItem('todoData')),
-    count: JSON.parse(storage.getItem('todoData')).filter((task) => {
+const App = () => {
+  let [todoData, setData] = useState(JSON.parse(storage.getItem('todoData')));
+  let [count, setCount] = useState(
+    JSON.parse(storage.getItem('todoData')).filter((task) => {
       if (task.completed === false) {
         return true;
       }
       return false;
-    }).length,
-    filter: 'All',
-  };
-
-  deleteTask = (id) => {
-    this.setState(({ todoData }) => {
+    }).length
+  );
+  let [filter, setFilter] = useState('All');
+  const deleteTask = (id) => {
+    setData(() => {
       let element = todoData.findIndex((el) => el.id === id);
       const newTodoData = [...todoData.slice(0, element), ...todoData.slice(element + 1)];
       storage.setItem('todoData', JSON.stringify(newTodoData));
-
-      return {
-        todoData: newTodoData,
-      };
+      return newTodoData;
     });
   };
-
-  updateCount = () => {
-    this.setState(({ todoData }) => {
-      return { count: todoData.filter((task) => task.completed === false).length };
-    });
+  const updateCount = () => {
+    setCount(todoData.filter((task) => task.completed === false).length);
   };
 
-  componentDidUpdate(prevProps, prevState) {
-    if (prevState.todoData !== this.state.todoData) {
-      this.updateCount();
-    }
-  }
-
-  componentDidMount() {
-    this.setState(({ todoData }) => {
-      const newArr = todoData.map((obj) => {
-        const newObject = Object.assign({}, obj);
-        newObject.created = false;
-        return newObject;
-      });
-      storage.setItem('todoData', JSON.stringify(newArr));
-      return {
-        todoData: newArr,
-      };
-    });
-  }
-
-  onToggleCompleted = (id) => {
-    this.setState(({ todoData }) => {
+  const onToggleCompleted = (id) => {
+    setData(() => {
       let index = todoData.findIndex((el) => el.id === id);
       const newArr = todoData.map((obj) => {
         const newObject = Object.assign({}, obj);
@@ -83,14 +56,12 @@ export default class App extends Component {
       }
       newArr[index] = task;
       storage.setItem('todoData', JSON.stringify(newArr));
-      return {
-        todoData: newArr,
-      };
+      return newArr;
     });
   };
 
-  onToggleEditing = (id) => {
-    this.setState(({ todoData }) => {
+  const onToggleEditing = (id) => {
+    setData(() => {
       let index = todoData.findIndex((el) => el.id === id);
       const newArr = todoData.map((obj) => {
         const newObject = Object.assign({}, obj);
@@ -105,14 +76,12 @@ export default class App extends Component {
       }
       newArr[index] = task;
       storage.setItem('todoData', JSON.stringify(newArr));
-      return {
-        todoData: newArr,
-      };
+      return newArr;
     });
   };
 
-  editTask = (id, line) => {
-    this.setState(({ todoData }) => {
+  const editTask = (id, line) => {
+    setData(() => {
       let index = todoData.findIndex((el) => el.id === id);
       const newArr = todoData.map((obj) => {
         const newObject = Object.assign({}, obj);
@@ -128,14 +97,12 @@ export default class App extends Component {
       task.label = line;
       newArr[index] = task;
       storage.setItem('todoData', JSON.stringify(newArr));
-      return {
-        todoData: newArr,
-      };
+      return newArr;
     });
   };
 
-  addTask = (obj) => {
-    this.setState(({ todoData }) => {
+  const addTask = (obj) => {
+    setData(() => {
       let id = Math.random().toString(36).slice(2);
       let label = obj.taskTitle;
       let date = new Date();
@@ -151,29 +118,25 @@ export default class App extends Component {
       };
       let newTodoData = [...todoData, newTask];
       storage.setItem('todoData', JSON.stringify(newTodoData));
-      return {
-        todoData: newTodoData,
-      };
+      return newTodoData;
     });
   };
 
-  getLabel = debounce((obj) => {
-    this.addTask(obj);
+  const getLabel = debounce((obj) => {
+    addTask(obj);
     return true;
   });
 
-  onFilter = (id) => {
+  const onFilter = (id) => {
+    setFilter(id);
     if (id === 'All') {
-      this.setState(({ todoData }) => {
+      setData(() => {
         const newTodoData = todoData.map((obj) => ({ ...obj, hidden: false }));
         storage.setItem('todoData', JSON.stringify(newTodoData));
-        return {
-          todoData: newTodoData,
-          filter: id,
-        };
+        return newTodoData;
       });
     } else if (id === 'Active') {
-      this.setState(({ todoData }) => {
+      setData(() => {
         const newTodoData = todoData.map((obj) => {
           if (obj.completed === false) {
             return { ...obj, hidden: false };
@@ -182,13 +145,10 @@ export default class App extends Component {
           }
         });
         storage.setItem('todoData', JSON.stringify(newTodoData));
-        return {
-          todoData: newTodoData,
-          filter: id,
-        };
+        return newTodoData;
       });
     } else {
-      this.setState(({ todoData }) => {
+      setData(() => {
         const newTodoData = todoData.map((obj) => {
           if (obj.completed === true) {
             return { ...obj, hidden: false };
@@ -197,16 +157,13 @@ export default class App extends Component {
           }
         });
         storage.setItem('todoData', JSON.stringify(newTodoData));
-        return {
-          todoData: newTodoData,
-          filter: id,
-        };
+        return newTodoData;
       });
     }
   };
 
-  onClear = () => {
-    this.setState(({ todoData }) => {
+  const onClear = () => {
+    setData(() => {
       const newTodoData = todoData
         .map((obj) => {
           const newObject = Object.assign({}, obj);
@@ -219,30 +176,57 @@ export default class App extends Component {
           return false;
         });
       storage.setItem('todoData', JSON.stringify(newTodoData));
-      return {
-        todoData: newTodoData,
-      };
+      return newTodoData;
+    });
+  };
+  const onComplete = (e, id) => {
+    setData(() => {
+      let index = todoData.findIndex((el) => el.id === id);
+      const newArr = todoData.map((obj) => {
+        const newObject = Object.assign({}, obj);
+        return newObject;
+      });
+      let task = newArr[index];
+      task.timer = [0, e];
+      newArr[index] = task;
+      storage.setItem('todoData', JSON.stringify(newArr));
+      return newArr;
     });
   };
 
-  render() {
-    return (
-      <section className="todoapp">
-        <Header onTyped={this.getLabel} />
-        <TodoList
-          todos={this.state.todoData}
-          onDeleted={this.deleteTask}
-          onToggleEditing={this.onToggleEditing}
-          onToggleCompleted={this.onToggleCompleted}
-          editTask={this.editTask}
-          onFilter={this.onFilter}
-          filterValue={this.state.filter}
-        />
-        <Footer onFilter={this.onFilter} onClear={this.onClear} count={this.state.count} />
-      </section>
-    );
-  }
-}
+  useEffect(() => {
+    updateCount();
+  }, [todoData]);
+
+  useEffect(() => {
+    setData(() => {
+      const newArr = todoData.map((obj) => {
+        const newObject = Object.assign({}, obj);
+        newObject.created = false;
+        return newObject;
+      });
+      storage.setItem('todoData', JSON.stringify(newArr));
+      return newArr;
+    });
+  }, []);
+
+  return (
+    <section className="todoapp">
+      <Header onTyped={getLabel} />
+      <TodoList
+        todos={todoData}
+        onDeleted={deleteTask}
+        onToggleEditing={onToggleEditing}
+        onToggleCompleted={onToggleCompleted}
+        editTask={editTask}
+        onFilter={onFilter}
+        filterValue={filter}
+        onComplete={onComplete}
+      />
+      <Footer onFilter={onFilter} onClear={onClear} count={count} />
+    </section>
+  );
+};
 
 let container = null;
 

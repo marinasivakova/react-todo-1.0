@@ -1,109 +1,109 @@
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 import cn from 'classnames';
 import propTypes from 'prop-types';
 
-export default class Timer extends Component {
-  state = { count: 1, interval: null, pressed: false };
-  updateTimer = (e) => {
-    if (!e && this.props.created) {
-      const updateTimeout = () => {
-        let count = this.state.count;
-        this.setState({
-          timeCurrent: new Date(count * 1000),
-          count: count + 1,
-        });
-        this.getTimeString();
-      };
-      this.setState({ interval: setTimeout(updateTimeout, 1000) });
-    } else if (e.target.className === 'icon icon-play') {
-      if (this.state.pressed) {
-        return null;
-      }
-      this.setState({
-        pressed: true,
-      });
-      const updateTimeout = () => {
-        let count = this.state.count;
-        this.setState({
-          timeCurrent: new Date(count * 1000),
-          count: count + 1,
-        });
-        this.getTimeString();
-        this.setState({ interval: setTimeout(updateTimeout, 1000) });
-      };
-      this.setState({ interval: setTimeout(updateTimeout, 1000) });
-    } else {
-      clearTimeout(this.state.interval);
-      this.setState({
-        pressed: false,
-      });
+const Timer = ({ completed, passedTime, created, onComplete }) => {
+  const [count, setCount] = useState(1);
+  const [interval, setTheInterval] = useState(null);
+  const [pressed, setPressed] = useState(false);
+  const [timeCurrent, setTime] = useState(null);
+  let [timeString, setTimeString] = useState('');
+  const getTimeString = () => {
+    if (timeCurrent) {
+      setTimeString(
+        timeCurrent.toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          timeZone: 'UTC',
+        })
+      );
     }
   };
-
-  getTimeString = () => {
-    let timeString = '';
-    if (this.state.timeCurrent) {
-      timeString = this.state.timeCurrent.toLocaleTimeString([], {
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        timeZone: 'UTC',
-      });
-    }
-    return timeString;
-  };
-
-  createInitialTimer = () => {
-    const { passedTime } = this.props;
+  const createInitialTimer = () => {
     while (passedTime[0] > 0) {
       passedTime[0] = passedTime[0] - 1;
       passedTime[1] = Number(passedTime[1]) + 60;
+      setCount(Number(passedTime[1]));
     }
     if (passedTime[1] > 0) {
-      this.setState({
-        count: Number(passedTime[1]),
-      });
+      setCount(Number(passedTime[1]));
+    }
+    return passedTime[1];
+  };
+  const updateTimer = (e) => {
+    if (!e && created) {
+      const updateTimeout = () => {
+        setCount((v) => v + 1);
+      };
+      let intervalNew = setInterval(updateTimeout, 1000);
+      setTheInterval(intervalNew);
+      setPressed(true);
+    } else if (e.target.className === 'icon icon-play') {
+      if (pressed) {
+        return null;
+      }
+      setPressed(true);
+      const updateTimeout = () => {
+        setCount((v) => v + 1);
+      };
+      let intervalNew = setInterval(updateTimeout, 1000);
+      setTheInterval(intervalNew);
+    } else {
+      clearInterval(interval);
+      setPressed(false);
+      setTheInterval(null);
     }
   };
-
-  componentDidMount() {
-    this.createInitialTimer();
-    if (this.props.created) {
-      this.updateTimer();
-    }
+  const classes = {
+    play: cn('icon icon-play', {
+      hidden: completed,
+    }),
+    pause: cn('icon icon-pause', {
+      hidden: completed,
+    }),
+  };
+  if (completed) {
+    clearInterval(interval);
   }
 
-  render() {
-    const { completed } = this.props;
-    const classes = {
-      play: cn('icon icon-play', {
-        hidden: completed,
-      }),
-      pause: cn('icon icon-pause', {
-        hidden: completed,
-      }),
-    };
-    if (completed) {
-      clearTimeout(this.state.interval);
-    }
-    return (
-      <span className="description">
-        <button className={classes.play} onClick={this.updateTimer}></button>
-        <button className={classes.pause} onClick={this.updateTimer}></button>
-        {this.getTimeString()}
-      </span>
-    );
-  }
-}
+  useEffect(() => {
+    let number = createInitialTimer();
+    let newTime = new Date(number * 1000);
+    setTime(newTime);
+  }, []);
+
+  useEffect(() => {
+    getTimeString();
+  }, [timeCurrent]);
+
+  useEffect(() => {
+    let newTime = new Date(count * 1000);
+    setTime(newTime);
+    getTimeString();
+    onComplete(count);
+  }, [count]);
+  return (
+    <span className="description">
+      <button className={classes.play} onClick={updateTimer}></button>
+      <button className={classes.pause} onClick={updateTimer}></button>
+      {timeString}
+    </span>
+  );
+};
 
 Timer.defaultProps = {
   completed: false,
   created: false,
   passedTime: [0, 0],
+  onComplete: () => {},
 };
 
 Timer.propTypes = {
   completed: propTypes.bool,
   created: propTypes.bool,
   passedTime: propTypes.array,
+  onComplete: propTypes.func,
 };
+
+export default Timer;

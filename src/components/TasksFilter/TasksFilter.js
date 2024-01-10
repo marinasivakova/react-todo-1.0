@@ -1,76 +1,58 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import cn from 'classnames';
 
-export default class TasksFilter extends Component {
-  state = {
-    all: true,
-    active: false,
-    completed: false,
+const TasksFilter = ({ onFilter }) => {
+  const [all, setAll] = useState(true);
+  const [active, setActive] = useState(false);
+  const [completed, setCompleted] = useState(false);
+
+  const changePicked = (value) => {
+    if (value === 'All') {
+      setAll(true);
+      setActive(false);
+      setCompleted(false);
+    } else if (value === 'Active') {
+      setAll(false);
+      setActive(true);
+      setCompleted(false);
+    } else {
+      setAll(false);
+      setActive(false);
+      setCompleted(true);
+    }
   };
 
-  render() {
-    const { onFilter } = this.props;
-    const changePicked = (value) => {
-      if (value === 'All') {
-        this.setState(() => {
-          return {
-            all: true,
-            active: false,
-            completed: false,
-          };
-        });
-      } else if (value === 'Active') {
-        this.setState(() => {
-          return {
-            all: false,
-            active: true,
-            completed: false,
-          };
-        });
-      } else {
-        this.setState(() => {
-          return {
-            all: false,
-            active: false,
-            completed: true,
-          };
-        });
-      }
-    };
+  const filterPressed = (e) => {
+    changePicked(e.target.id);
+    return onFilter(e.target.id);
+  };
 
-    const filterPressed = (e) => {
-      changePicked(e.target.id);
-      return onFilter(e.target.id);
-    };
-
-    const classes = {
-      all: cn({ selected: this.state.all }),
-      active: cn({ selected: this.state.active }),
-      completed: cn({ selected: this.state.completed }),
-    };
-
-    return (
-      <ul className="filters">
-        <li>
-          <button id="All" className={classes.all} onClick={filterPressed}>
-            All
-          </button>
-        </li>
-        <li>
-          <button id="Active" className={classes.active} onClick={filterPressed}>
-            Active
-          </button>
-        </li>
-        <li>
-          <button id="Completed" className={classes.completed} onClick={filterPressed}>
-            Completed
-          </button>
-        </li>
-      </ul>
-    );
-  }
-}
+  const classes = {
+    all: cn({ selected: all }),
+    active: cn({ selected: active }),
+    completed: cn({ selected: completed }),
+  };
+  return (
+    <ul className="filters">
+      <li>
+        <button id="All" className={classes.all} onClick={filterPressed}>
+          All
+        </button>
+      </li>
+      <li>
+        <button id="Active" className={classes.active} onClick={filterPressed}>
+          Active
+        </button>
+      </li>
+      <li>
+        <button id="Completed" className={classes.completed} onClick={filterPressed}>
+          Completed
+        </button>
+      </li>
+    </ul>
+  );
+};
 
 TasksFilter.defaultProps = {
   onFilter: () => {
@@ -81,3 +63,5 @@ TasksFilter.defaultProps = {
 TasksFilter.propTypes = {
   onFilter: PropTypes.func,
 };
+
+export default TasksFilter;
