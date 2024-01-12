@@ -21,15 +21,9 @@ const Timer = ({ completed, passedTime, created, onComplete }) => {
     }
   };
   const createInitialTimer = () => {
-    while (passedTime[0] > 0) {
-      passedTime[0] = passedTime[0] - 1;
-      passedTime[1] = Number(passedTime[1]) + 60;
-      setCount(Number(passedTime[1]));
-    }
-    if (passedTime[1] > 0) {
-      setCount(Number(passedTime[1]));
-    }
-    return passedTime[1];
+    const amountOfSeconds = passedTime[0] * 60 + passedTime[1];
+    setCount(amountOfSeconds);
+    return amountOfSeconds;
   };
   const updateTimer = (e) => {
     if (!e && created) {
@@ -65,6 +59,9 @@ const Timer = ({ completed, passedTime, created, onComplete }) => {
   };
   if (completed) {
     clearInterval(interval);
+    if (pressed) {
+      setPressed(false);
+    }
   }
 
   useEffect(() => {
